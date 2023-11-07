@@ -1,6 +1,6 @@
 import http from 'http';
 
-const DEFAULT_PORT = 3000;
+const DEFAULT_PORT = 8080;
 
 const port = process.env.PING_LISTEN_PORT || DEFAULT_PORT;
 
