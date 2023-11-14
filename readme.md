@@ -21,7 +21,7 @@ npm i
 Démarrer le projet (le port d'écoute de base est le 3000):
 ```npm start```
 
-Préciser un port d'écoute dans les variables d'environnement (3200 par exemple) :
+Préciser un port d'écoute dans les variables d'environnement (uniquement sur linux) :
 ```bash
 PING_LISTEN_PORT=3200 npm start
 ```

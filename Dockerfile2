@@ -1,0 +1,30 @@
+FROM node:20 AS build
+
+RUN useradd -m appuser
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+RUN npm run build
+
+FROM node:20-alpine
+
+RUN adduser -D appuser
+
+WORKDIR /usr/src/app
+
+COPY --from=build /usr/src/app/build ./build
+COPY --from=build /usr/src/app/package*.json ./
+
+RUN npm install --only=production
+
+RUN chown -R appuser:appuser /usr/src/app
+
+USER appuser
+
+CMD ["node", "build/index.js"]
