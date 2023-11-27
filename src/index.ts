@@ -8,6 +8,7 @@ const server = http.createServer((req, res) => {
   if (req.url === '/ping' && req.method === 'GET') {
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(req.headers));
+    console.log(`Request received on ${req.headers.host}`);
   } else {
     res.statusCode = 404;
     res.end();

@@ -1,22 +1,15 @@
-#Choix de ubuntu 18 et non 22 uniquement pour pouvoir utiliser Trivy
-FROM ubuntu:18.04
-
-RUN apt-get update
-
-RUN apt-get install -y nodejs npm
-
-RUN useradd -m appuser
-
-WORKDIR /usr/src/app
+FROM node:19-bullseye
+WORKDIR /app
 
 COPY package*.json ./
+RUN npm install
 
-COPY . .
+COPY tsconfig.json ./
+COPY src ./src
+RUN npx tsc
 
-RUN chown -R appuser:appuser /usr/src/app
+RUN adduser --no-create-home --group --disabled-login --system www
+RUN chown www -R /app
+USER www
 
-EXPOSE 3000
-
-USER appuser
-
-CMD ["node", "build/index.js"]
+CMD node build/index.js

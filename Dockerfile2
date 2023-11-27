@@ -1,30 +1,22 @@
-FROM node:20 AS build
-
-RUN useradd -m appuser
-
-WORKDIR /usr/src/app
+FROM node:19-bullseye AS builder
+WORKDIR /app
 
 COPY package*.json ./
-
 RUN npm install
 
-COPY . .
+COPY tsconfig.json ./
+COPY src ./src
+RUN npx tsc
 
-RUN npm run build
+FROM node:19-bullseye-slim
+WORKDIR /app
 
-FROM node:20-alpine
+RUN adduser --no-create-home --disabled-login --group --system www
+RUN chown www -R /app
+USER www
 
-RUN adduser -D appuser
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/build ./build
 
-WORKDIR /usr/src/app
-
-COPY --from=build /usr/src/app/build ./build
-COPY --from=build /usr/src/app/package*.json ./
-
-RUN npm install --only=production
-
-RUN chown -R appuser:appuser /usr/src/app
-
-USER appuser
-
-CMD ["node", "build/index.js"]
+CMD node build/index.js
